@@ -9,6 +9,11 @@
     <li class="list-group-item"><strong>Stock :</strong> {{ produit.stock }}</li>
     <li class="list-group-item"><strong>Condition de stockage :</strong> {{ produit.condition_stock }}</li>
     <li class="list-group-item"><strong>Numéro de FDS :</strong> {{ produit.nb_FDS }}</li>
+    <li class="list-group-item">Modifier
+        <a href="{% url 'modifier_produit' produit.pk %}">
+            <img src="/media/img/pencil-square.svg" alt="Modifier" width="20" height="20">
+        </a>
+    </li>
     <li class="list-group-item">
        <h2>Fiche de sécurité</h2>
       {% if produit.fichier_FDS %}

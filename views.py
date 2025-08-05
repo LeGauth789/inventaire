@@ -106,8 +106,22 @@ def base(request):
 ########################################
 
 def liste_produits(request):
+    sort = request.GET.get('sort', 'nom')
+    order = request.GET.get('order', 'asc')
+
     produits = Produit.objects.all()
-    return render(request, 'inventaire/liste_produits.html', {'produits': produits})
+
+    if order == 'desc':
+        produits = produits.order_by(f'-{sort}')
+    else:
+        produits = produits.order_by(sort)
+
+    return render(request, 'inventaire/liste_produits.html', {
+        'produits': produits,
+        'current_sort': sort,
+        'current_order': order
+    })
+
 
 def fiche_produit(request, pk):
 

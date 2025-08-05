@@ -2,7 +2,6 @@ from django import forms
 from .models import Produit , MouvementStock
 
 class AjoutProduitForm(forms.ModelForm):
-
     class Meta:
         model = Produit
         fields = ['nom','condition_stock','nb_FDS', 'date_reception','fournisseur','ref',

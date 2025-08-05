@@ -6,15 +6,45 @@
   <h1>Liste des Produits</h1>
 
   <table class="table table-striped table-bordered">
-    <thead class="table-primary">
-      <tr>
-        <th>Nom</th>
-        <th>Date de réception</th>
-        <th>Stock</th>
-        <th>Ajouté par</th>
-        <th>Modifier</th>
-      </tr>
-    </thead>
+<thead class="table-primary">
+  <tr>
+    <th>
+      <a href="?sort=nom&order={% if current_sort == 'nom' and current_order == 'asc' %}desc{% else %}asc{% endif %}" class="sort-link">
+        Nom
+        {% if current_sort == 'nom' %}
+          {% if current_order == 'asc' %}▲{% else %}▼{% endif %}
+        {% endif %}
+      </a>
+    </th>
+    <th>
+      <a href="?sort=date_reception&order={% if current_sort == 'date_reception' and current_order == 'asc' %}desc{% else %}asc{% endif %}"  class="sort-link">
+        Date de réception
+        {% if current_sort == 'date_reception' %}
+          {% if current_order == 'asc' %}▲{% else %}▼{% endif %}
+        {% endif %}
+      </a>
+    </th>
+    <th>
+      <a href="?sort=stock&order={% if current_sort == 'stock' and current_order == 'asc' %}desc{% else %}asc{% endif %}"  class="sort-link">
+        Stock
+        {% if current_sort == 'stock' %}
+          {% if current_order == 'asc' %}▲{% else %}▼{% endif %}
+        {% endif %}
+      </a>
+    </th>
+    <th>
+      <a href="?sort=utilisateur__username&order={% if current_sort == 'utilisateur__username' and current_order == 'asc' %}desc{% else %}asc{% endif %}" class="sort-link">
+        Ajouté par
+        {% if current_sort == 'utilisateur__username' %}
+          {% if current_order == 'asc' %}▲{% else %}▼{% endif %}
+        {% endif %}
+      </a>
+    </th>
+    <th>Modifier</th>
+  </tr>
+</thead>
+
+
     <tbody>
       {% for produit in produits %}
         <tr>
@@ -23,14 +53,14 @@
           <td>{{ produit.stock }}</td>
           <td>{{ produit.utilisateur }}</td>
           <td>
-          <a href="{% url 'modifier_produit' produit.pk %}">
-            <img src="/media/img/pencil-square.svg" alt="Modifier" width="20" height="20">
-          </a>
-        </td>
+            <a href="{% url 'modifier_produit' produit.pk %}">
+              <img src="/media/img/pencil-square.svg" alt="Modifier" width="20" height="20">
+            </a>
+          </td>
         </tr>
       {% empty %}
         <tr>
-          <td colspan="4" class="text-center">Aucun produit dans l'inventaire.</td>
+          <td colspan="5" class="text-center">Aucun produit dans l'inventaire.</td>
         </tr>
       {% endfor %}
     </tbody>
@@ -38,3 +68,5 @@
 
   <a href="{% url 'ajouter_produit' %}" class="btn btn-primary">Ajouter un produit</a>
 {% endblock %}
+
+
