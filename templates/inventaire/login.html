@@ -1,0 +1,13 @@
+{% extends "inventaire/base.html" %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+<h2>Se connecter</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Connexion</button>
+</form>
+<p class="mt-3">Pas encore de compte ? <a href="{% url 'register' %}">Inscrivez-vous ici</a></p>
+{% endblock %}

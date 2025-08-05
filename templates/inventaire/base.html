@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Gestion Inventaire{% endblock %}</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous"/>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'inventaire/css/style.css' %}" />
+</head>
+<body style="font-family: 'Inter', sans-serif; background-color: #f8f9fa;">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'liste_produits' %}">
+        <img src="/media/img/BP-couleurs.png" alt="Logo" width="100" height="50" class="me-2" />
+        <span class="fw-bold text-primary">BP Inventaire</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav align-items-center">
+          {% if user.is_authenticated %}
+
+            <!-- Lien vers Produits -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'liste_produits' %}">
+                <i class="fa fa-boxes-stacked me-1"></i> Produits
+              </a>
+            </li>
+
+            <!-- Lien vers Ajout de Produit -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'ajouter_produit' %}">
+                <i class="fa fa-plus-circle me-1"></i> Ajouter
+              </a>
+            </li>
+
+            <!-- Si superuser : gestion des droits -->
+            {% if user.is_superuser %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'gestion_droits' %}">
+                <i class="fa fa-user-shield me-1"></i> Gestion des droits
+              </a>
+            </li>
+            {% endif %}
+
+            <!-- Menu utilisateur -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                <i class="fa fa-user-circle me-1"></i> {{ user.first_name|default:user.username }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li>
+                  <form method="post" action="{% url 'logout' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item">
+                      <i class="fa fa-sign-out-alt me-1"></i> Déconnexion
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+
+          {% else %}
+            <!-- Lien vers Connexion -->
+            <li class="nav-item">
+              <a class="nav-link text-primary" href="{% url 'login' %}">
+                <i class="fa fa-sign-in-alt me-1"></i> Connexion
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Messages -->
+  <div class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <!-- Page content -->
+  <main class="container mb-5">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-muted py-3 border-top">
+    <small>&copy; {{ now|date:"Y" }} BP Inventaire - Tous droits réservés</small>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+  <!-- JS personnalisé -->
+  <script src="{% static 'inventaire/js/script.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{% extends 'inventaire/base.html' %}
+
+{% block title %}Gérer mouvement - {{ produit.nom }}{% endblock %}
+
+{% block content %}
+  <h1>Gérer mouvement pour : {{ produit.nom }}</h1>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Valider</button>
+    <a href="{% url 'fiche_produit' produit.pk %}" class="btn btn-secondary">Annuler</a>
+  </form>
+{% endblock %}

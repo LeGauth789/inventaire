@@ -1,0 +1,21 @@
+{% extends 'inventaire/base.html' %}
+
+{% block title %}Confirmer l'ajout au stock{% endblock %}
+
+{% block content %}
+  <h2>Ce produit existe déjà : {{ produit.nom }}</h2>
+  <p>Stock actuel : {{ produit.stock }}</p>
+  <p>Souhaitez-vous ajouter {{ stock }} au stock existant ?</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="nom" value="{{ nom }}">
+    <input type="hidden" name="stock" value="{{ stock }}">
+    <input type="hidden" name="date_reception" value="{{ date_reception }}">
+    <input type="hidden" name="fournisseur" value="{{ fournisseur }}">
+    <input type="hidden" name="confirmer_ajout" value="1">
+
+    <button type="submit" class="btn btn-success">✅ Oui, ajouter au stock existant</button>
+    <a href="{% url 'ajouter_produit' %}" class="btn btn-danger ms-2">❌ Annuler</a>
+  </form>
+{% endblock %}

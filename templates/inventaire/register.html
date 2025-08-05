@@ -1,0 +1,12 @@
+{% extends "inventaire/base.html" %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block content %}
+<h2>Créer un compte</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">S’inscrire</button>
+</form>
+{% endblock %}
