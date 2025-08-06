@@ -54,7 +54,7 @@ def is_employe(user):
 ########################################
 ###        GESTION DES DROITS        ###
 ########################################
-#  Fonction qui gère l'affichage de l'interface administrateur            
+#  Fonction qui gère l'affichage de l'interface administrateur
 
 @user_passes_test(is_admin)
 def gestion_droits(request):
@@ -96,7 +96,7 @@ def gestion_droits(request):
 ###       GESTION BASE HTML          ###
 ########################################
 # Permet d'afficher la base HTML/CSS/JS
-#commune à toutes les pages 
+#commune à toutes les pages
 
 def base(request):
     return render(request, 'inventaire/base.html')
@@ -151,7 +151,7 @@ def ajouter_produit(request):
 
             produit.stock += stock
             produit.save()
-            
+
             MouvementStock.objects.create(
                 produit=produit,
                 utilisateur=request.user,
@@ -224,12 +224,12 @@ def modifier_produit(request, pk):
 
 def supprimer_produit(request, pk):
     produit = get_object_or_404(Produit, pk=pk)
-    
+
     if request.method == "POST":
         produit.delete()
         messages.success(request, f"Le produit '{produit.nom}' a été supprimé.")
-        return redirect('liste_produits') 
-    
+        return redirect('liste_produits')
+
     return redirect('fiche_produit', pk=pk)
 
 def gerer_mouvement_stock(request, produit_id):
@@ -240,12 +240,12 @@ def gerer_mouvement_stock(request, produit_id):
         if form.is_valid():
 
             date = form.cleaned_data['date']
-            
+
             mouvement = form.save(commit=False)
-            
+
             mouvement.date = date if date else timezone.now()
             mouvement.produit = produit
-            
+
             mouvement.utilisateur = request.user
             print(date)
             mouvement.save()
@@ -297,7 +297,7 @@ def upload_pdf(request, pk):
                     produit=produit,
                     utilisateur=request.user,
                     type_mouvement="Modification",
-                    quantite="-",
+                    quantite=0,
                     fournisseur="-",
                     commentaire=", ".join(commentaire)
                 )
