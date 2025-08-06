@@ -21,7 +21,5 @@ urlpatterns = [
     path('produit/<int:pk>/', views.fiche_produit, name='fiche_produit'),
     path('produit/<int:pk>/modifier/', views.modifier_produit, name='modifier_produit'),
     path('produit/<int:pk>/supprimer/', views.supprimer_produit, name='supprimer_produit'),
-
     
-
 ]
