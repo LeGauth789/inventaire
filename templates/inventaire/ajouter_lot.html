@@ -1,0 +1,11 @@
+{% extends 'inventaire/base.html' %}
+{% block title %}Ajouter un lot{% endblock %}
+{% block content %}
+  <h2>Ajouter un lot pour {{ produit.nom }}</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary" type="submit">Ajouter</button>
+    <a href="{% url 'fiche_produit' produit.pk %}" class="btn btn-secondary">Retour</a>
+  </form>
+{% endblock %}

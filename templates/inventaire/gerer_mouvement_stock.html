@@ -1,0 +1,35 @@
+{% extends 'inventaire/base.html' %}
+
+{% block title %}Enregistrer un mouvement de stock{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Mouvement de stock pour : <strong>{{ produit.nom }}</strong></h2>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="id_type_mouvement" class="form-label">Type de mouvement</label>
+      {{ form.type_mouvement }}
+    </div>
+
+    <div class="mb-3">
+      <label for="id_lot" class="form-label">Lot concerné</label>
+      {{ form.lot }}
+    </div>
+
+    <div class="mb-3">
+      <label for="id_quantite" class="form-label">Quantité</label>
+      {{ form.quantite }}
+    </div>
+
+    <div class="mb-3">
+      <label for="id_commentaire" class="form-label">Commentaire (optionnel)</label>
+      {{ form.commentaire }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Valider le mouvement</button>
+    <a href="{% url 'fiche_produit' produit.pk %}" class="btn btn-secondary">Annuler</a>
+  </form>
+</div>
+{% endblock %}

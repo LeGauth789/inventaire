@@ -1,0 +1,16 @@
+{% extends 'inventaire/base.html' %}
+
+{% block title %}Supprimer la fiche{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Supprimer la fiche produit : <strong>{{ fiche.nom }}</strong></h2>
+  <p>Êtes-vous sûr de vouloir supprimer cette fiche ? Cette action est irréversible.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <a href="{% url 'fiche_produit' fiche.pk %}" class="btn btn-secondary">Annuler</a>
+    <button type="submit" class="btn btn-danger">Supprimer</button>
+  </form>
+</div>
+{% endblock %}

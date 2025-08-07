@@ -1,101 +1,80 @@
+<!-- produit : instance de Fiche_Produit -->
+
 {% extends 'inventaire/base.html' %}
 
 {% block title %}Fiche produit : {{ produit.nom }}{% endblock %}
 
 {% block content %}
-  <h1>Fiche produit : {{ produit.nom }}</h1>
+<div class="container mt-4">
+  <h1 class="mb-4">Fiche produit : <strong>{{ produit.nom }}</strong></h1>
 
+  <h3>Informations générales</h3>
   <ul class="list-group mb-4">
-    <li class="list-group-item"><strong>Stock :</strong> {{ produit.stock }}</li>
-    <li class="list-group-item"><strong>Condition de stockage :</strong> {{ produit.condition_stock }}</li>
-    <li class="list-group-item"><strong>Numéro de FDS :</strong> {{ produit.nb_FDS }}</li>
-    <li class="list-group-item">Modifier
-        <a href="{% url 'modifier_produit' produit.pk %}">
-            <img src="/media/img/pencil-square.svg" alt="Modifier" width="20" height="20">
-        </a>
-    </li>
+    <li class="list-group-item"><strong>Référence :</strong> {{ produit.ref }}</li>
+    <li class="list-group-item"><strong>Numéro de Fiche De Sécurité (FDS):</strong> {{ produit.numero_fds }}</li>
     <li class="list-group-item">
-       <h2>Fiche de sécurité</h2>
-      {% if produit.fichier_FDS %}
-       
-        <a href="{{ produit.fichier_FDS.url }}" class="btn btn-info mb-3"target="_blank">Voir la fiche PDF</a>
-        <a href="{% url 'upload_pdf' produit.pk %}" class="btn btn-info mb-3">
-          Modifier la fiche PDF
+        {% if produit.fichier_FDS %}
+        <a href="{{ produit.fichier_FDS.url }}" target="_blank" title="Voir la fiche de sécurité">
+          Voir la fiche de sécurité
+        <i class="bi bi-eye" style="font-size: 1.2rem;"></i>
         </a>
         {% else %}
-        <p>
-          <a href="{% url 'upload_pdf' produit.pk %}" class="btn btn-info mb-3">
-              Ajouter / Modifier la fiche PDF
-          </a>
-        </p>
-      {% endif %}
-    </li>
-        <li class="list-group-item">
-          <h2>Certificat d'analyse</h2>
-      {% if produit.fichier_CA %}
-        
-        <a href="{{ produit.fichier_CA.url }}" class="btn btn-info mb-3"target="_blank">Voir la fiche CA</a>
-        <a href="{% url 'upload_pdf' produit.pk %}" class="btn btn-info mb-3">
-          Modifier la fiche PDF
+        <a href="{% url 'upload_fds' produit.pk %}" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-upload"></i> Ajouter FDS
         </a>
-        {% else %}
-        <p>
-          <a href="{% url 'upload_pdf' produit.pk %}" class="btn btn-info mb-3">
-              Ajouter / Modifier la fiche PDF
-          </a>
-        </p>
-      {% endif %}
+        {% endif %}
     </li>
-    <li class="list-group-item">
-      <form action="{% url 'supprimer_produit' produit.id %}" method="post" onsubmit="return confirm('Supprimer ce produit définitivement ?');">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger">
-        Supprimer ce produit
-      </button>
-    </form>
-    </li>
+    <li class="list-group-item"><strong>Fournisseur :</strong> {{ produit.fournisseur }}</li>
+    <li class="list-group-item"><strong>Date réception :</strong> {{ produit.date_reception|date:"d/m/Y" }}</li>
   </ul>
 
-
-
-  <h2>Historique des mouvements</h2>
-  <table class="table table-striped table-bordered">
-    <thead class="table-secondary">
-      <tr>
-        <th>Date</th>
-        <th>Type</th>
-        <th>Quantité</th>
-        <th>Utilisateur</th>
-        <th>Fournisseur</th>
-        <th>Commentaire</th>
-      </tr>
-    </thead>
-    <tbody>
-      <a href="{% url 'gerer_mouvement_stock' produit.id %}" class="btn btn-warning mb-3">
-        Ajouter / Retirer du stock
-      </a>
-
-      {% for mouvement in mouvements %}
-      <tr>
-        <td>{{ mouvement.date|date:"d-m-Y" }}</td>
-        <td>{{ mouvement.get_type_mouvement_display }}</td>
-        <td>
-          {% if mouvement.type_mouvement == 'RETRAIT' %}
-            -{{ mouvement.quantite }}
-          {% else %}
-            +{{ mouvement.quantite }}
-          {% endif %}
-        </td>
-        <td>{{ mouvement.utilisateur.get_full_name|default:mouvement.utilisateur.username }}</td>
-        <td>{{ mouvement.fournisseur|default:"-" }}</td>
-        <td>{{ mouvement.commentaire|default:"-" }}</td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="6" class="text-center">Aucun mouvement enregistré.</td></tr>
-      {% endfor %}
-
-    </tbody>
-  </table>
-
-  <a href="{% url 'liste_produits' %}" class="btn btn-secondary mt-3">← Retour à la liste</a>
+  <h3>Lots associés</h3>
+  <div class="mb-3">
+  <a href="{% url 'ajouter_lot' produit.pk %}" class="btn btn-success me-2">
+    + Ajouter un lot
+  </a>
+  <a href="{% url 'gerer_mouvement_stock' produit.pk %}" class="btn btn-warning">
+    Enregistrer un retrait
+  </a>
+</div>
+  {% if produit.lots.all %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Date de réception</th>
+          <th>Fournisseur</th>
+          <th>Réference</th>
+          <th>N° lot</th>
+          <th>Quantité</th>
+          <th>Fichier CA</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lot in produit.lots.all %}
+        <tr>
+          <td>{{ lot.date_reception|date:"d/m/Y" }}</td>
+          <td>{{ lot.fournisseur}}</td>
+          <td>{{ lot.ref }}</td>
+          <td>{{ lot.nb_lot }}</td>
+          <td>{{ lot.stock_initial }}</td>
+          <td>
+              {% if lot.fichier_CA %}
+                <a href="{{ lot.fichier_CA.url }}" target="_blank" title="Voir certificat d’analyse">
+                  <i class="bi bi-eye" style="font-size: 1.2rem;"></i>
+                </a>
+              {% else %}
+                 <a href="{% url 'upload_ca' lot.pk %}" class="btn btn-outline-primary btn-sm">
+                  <i class="bi bi-upload"></i> Ajouter CA
+                </a>
+              {% endif %}
+          </td>
+          
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info">Aucun lot enregistré pour ce produit.</div>
+  {% endif %}
+</div>
 {% endblock %}

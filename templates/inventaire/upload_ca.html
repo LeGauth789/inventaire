@@ -1,0 +1,13 @@
+{% extends 'inventaire/base.html' %}
+
+{% block title %}Uploader CA - Lot {{ lot.ref }}{% endblock %}
+
+{% block content %}
+  <h1>Uploader le Certificat d’analyse pour le lot {{ lot.ref }}</h1>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary" type="submit">Envoyer</button>
+    <a href="{% url 'fiche_produit' lot.fiche_produit.pk %}" class="btn btn-secondary">Annuler</a>
+  </form>
+{% endblock %}

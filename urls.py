@@ -14,12 +14,17 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('register/', views.register, name='register'),
 
-    path('ajouter/', views.ajouter_produit, name='ajouter_produit'),
-    path('produit/<int:produit_id>/mouvement/', views.gerer_mouvement_stock, name='gerer_mouvement_stock'),
-    path('produit/<int:pk>/upload_pdf/', views.upload_pdf, name='upload_pdf'),
     path('liste/', views.liste_produits, name='liste_produits'),
-    path('produit/<int:pk>/', views.fiche_produit, name='fiche_produit'),
-    path('produit/<int:pk>/modifier/', views.modifier_produit, name='modifier_produit'),
-    path('produit/<int:pk>/supprimer/', views.supprimer_produit, name='supprimer_produit'),
+    path('fiche/<int:pk>/', views.fiche_produit, name='fiche_produit'),
+    path('fiche/<int:pk>/ajouter_lot/', views.ajouter_lot, name='ajouter_lot'),
+    path('fiche/<int:pk>/mouvement_stock/', views.gerer_mouvement_stock, name='gerer_mouvement_stock'),
+
+    path('fiche/<int:pk>/supprimer/', views.supprimer_fiche_produit, name='supprimer_fiche_produit'),
+
+    path('ajouter/', views.ajouter_fiche_produit, name='ajouter_fiche_produit'),
+
+    path('fiche/<int:pk>/upload_fds/', views.upload_fds, name='upload_fds'),
+    path('lot/<int:pk>/upload_ca/', views.upload_ca, name='upload_ca'),
     
+
 ]
