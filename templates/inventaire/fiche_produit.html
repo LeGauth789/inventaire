@@ -1,80 +1,146 @@
-<!-- produit : instance de Fiche_Produit -->
-
 {% extends 'inventaire/base.html' %}
+{% load static %}
 
 {% block title %}Fiche produit : {{ produit.nom }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
+
   <h1 class="mb-4">Fiche produit : <strong>{{ produit.nom }}</strong></h1>
 
-  <h3>Informations générales</h3>
-  <ul class="list-group mb-4">
-    <li class="list-group-item"><strong>Référence :</strong> {{ produit.ref }}</li>
-    <li class="list-group-item"><strong>Numéro de Fiche De Sécurité (FDS):</strong> {{ produit.numero_fds }}</li>
-    <li class="list-group-item">
-        {% if produit.fichier_FDS %}
-        <a href="{{ produit.fichier_FDS.url }}" target="_blank" title="Voir la fiche de sécurité">
-          Voir la fiche de sécurité
-        <i class="bi bi-eye" style="font-size: 1.2rem;"></i>
-        </a>
-        {% else %}
-        <a href="{% url 'upload_fds' produit.pk %}" class="btn btn-outline-primary btn-sm">
-          <i class="bi bi-upload"></i> Ajouter FDS
-        </a>
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Informations générales</h5>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><strong>Numéro FDS :</strong> {{ produit.numero_fds }}
+          {% if produit.fichier_FDS %}
+            <a href="{{ produit.fichier_FDS.url }}" target="_blank" title="Voir la fiche de sécurité" class="btn btn-outline-primary btn-sm me-2">
+              <i class="bi bi-file-earmark-pdf"></i> Voir FDS
+            </a>
+            <a href="{% url 'upload_fds' produit.pk %}" class="btn btn-outline-warning btn-sm">
+              <i class="bi bi-pencil-square"></i> Modifier FDS
+            </a>
+          {% else %}
+            <a href="{% url 'upload_fds' produit.pk %}" class="btn btn-outline-secondary btn-sm">
+              <i class="bi bi-upload"></i> Ajouter FDS
+            </a>
+          {% endif %}
+        </li>
+        <li class="list-group-item"><strong>Stock actuel :</strong> {{ produit.stock_actuel }}</li>
+        <li class="list-group-item"><strong>Conditions de stockage :</strong> {{ produit.condition_stock|default:"Aucune donnée" }}</li>
+        <li class="list-group-item"><strong>Consignes d'utilisation :</strong> {{ produit.consigne_utilisation|default:"Aucune donnée" }}</li>
+      </ul>
+      <small class="text-muted mt-3 d-block">
+        Créé le {{ produit.created_at|date:"d/m/Y H:i" }}<br>
+        Dernière mise à jour : {{ produit.updated_at|date:"d/m/Y H:i" }}
+        {% if produit.updated_by %}
+        par {{ produit.updated_by.get_full_name|default:produit.updated_by.username }}
         {% endif %}
-    </li>
-    <li class="list-group-item"><strong>Fournisseur :</strong> {{ produit.fournisseur }}</li>
-    <li class="list-group-item"><strong>Date réception :</strong> {{ produit.date_reception|date:"d/m/Y" }}</li>
-  </ul>
+      </small>
+      <div class="mt-3">
+        <a href="{% url 'supprimer_fiche_produit' produit.pk %}" class="btn btn-danger btn-sm" title="Supprimer cette fiche" onclick="return confirm('Voulez-vous vraiment supprimer cette fiche produit ?');">
+          <i class="bi bi-trash"></i> Supprimer la fiche
+        </a>
+      </div>
+    </div>
+  </div>
 
   <h3>Lots associés</h3>
-  <div class="mb-3">
-  <a href="{% url 'ajouter_lot' produit.pk %}" class="btn btn-success me-2">
-    + Ajouter un lot
-  </a>
-  <a href="{% url 'gerer_mouvement_stock' produit.pk %}" class="btn btn-warning">
-    Enregistrer un retrait
-  </a>
-</div>
+  <div class="mb-3 d-flex gap-2">
+    <a href="{% url 'ajouter_lot' produit.pk %}" class="btn btn-success">
+      <i class="bi bi-plus-lg"></i> Ajouter un lot
+    </a>
+    <a href="{% url 'gerer_mouvement_stock' produit.pk %}" class="btn btn-warning">
+      <i class="bi bi-pencil-square"></i> Enregistrer un retrait
+    </a>
+  </div>
+
   {% if produit.lots.all %}
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Date de réception</th>
-          <th>Fournisseur</th>
-          <th>Réference</th>
-          <th>N° lot</th>
-          <th>Quantité</th>
-          <th>Fichier CA</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for lot in produit.lots.all %}
-        <tr>
-          <td>{{ lot.date_reception|date:"d/m/Y" }}</td>
-          <td>{{ lot.fournisseur}}</td>
-          <td>{{ lot.ref }}</td>
-          <td>{{ lot.nb_lot }}</td>
-          <td>{{ lot.stock_initial }}</td>
-          <td>
-              {% if lot.fichier_CA %}
-                <a href="{{ lot.fichier_CA.url }}" target="_blank" title="Voir certificat d’analyse">
-                  <i class="bi bi-eye" style="font-size: 1.2rem;"></i>
-                </a>
-              {% else %}
-                 <a href="{% url 'upload_ca' lot.pk %}" class="btn btn-outline-primary btn-sm">
-                  <i class="bi bi-upload"></i> Ajouter CA
-                </a>
-              {% endif %}
-          </td>
-          
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Date réception</th>
+        <th>Fournisseur</th>
+        <th>Référence</th>
+        <th>N° lot</th>
+        <th>Quantité</th>
+        <th>Fichier CA</th>
+        <th>Historique</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lot in produit.lots.all %}
+      <tr>
+        <td>{{ lot.date_reception|date:"d/m/Y" }}</td>
+        <td>{{ lot.fournisseur }}</td>
+        <td>{{ lot.ref }}</td>
+        <td>{{ lot.nb_lot }}</td>
+        <td>{{ lot.quantite_actuelle }}</td>
+        <td>
+          {% if lot.fichier_CA %}
+            <a href="{{ lot.fichier_CA.url }}" target="_blank" title="Voir certificat d’analyse" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-file-earmark-pdf"></i>
+            </a>
+            <a href="{% url 'upload_ca' lot.pk %}" class="btn btn-outline-warning btn-sm">
+              <i class="bi bi-pencil-square"></i> Modifier CA
+            </a>
+          {% else %}
+            <a href="{% url 'upload_ca' lot.pk %}" class="btn btn-outline-secondary btn-sm">
+              <i class="bi bi-upload"></i> Ajouter CA
+            </a>
+          {% endif %}
+        </td>
+        <td>
+          <button
+            class="btn btn-info btn-sm toggle-historique-btn"
+            type="button"
+            data-target="historique-{{ lot.pk }}"
+            aria-expanded="false"
+            aria-controls="historique-{{ lot.pk }}">
+            <i class="bi bi-clock-history"></i> Historique
+          </button>
+        </td>
+      </tr>
+      <tr class="collapse" id="historique-{{ lot.pk }}">
+        <td colspan="7">
+          {% if lot.mouvements.all %}
+          <table class="table table-bordered table-sm mb-0">
+            <thead class="table-secondary">
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Quantité</th>
+                <th>Utilisateur</th>
+                <th>Commentaire</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for mouv in lot.mouvements.all %}
+              <tr>
+                <td>{{ mouv.date|date:"d/m/Y H:i" }}</td>
+                <td>{{ mouv.get_type_mouvement_display }}</td>
+                <td>{{ mouv.quantite }}</td>
+                <td>{{ mouv.utilisateur.username }}</td>
+                <td>{{ mouv.commentaire }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+            <div class="text-muted fst-italic">Aucun mouvement enregistré pour ce lot.</div>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
   {% else %}
-    <div class="alert alert-info">Aucun lot enregistré pour ce produit.</div>
+  <div class="alert alert-info">Aucun lot enregistré pour ce produit.</div>
   {% endif %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'inventaire/js/fiche_produit.js' %}"></script>
 {% endblock %}

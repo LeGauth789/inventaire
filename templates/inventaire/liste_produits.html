@@ -6,21 +6,22 @@
 <div class="container mt-4">
   <h1 class="mb-4">Liste des Fiches Produit</h1>
 
-  <div class="mb-3">
-  <a href="{% url 'ajouter_fiche_produit' %}" class="btn btn-success">
-    <i class="bi bi-plus-circle"></i> Ajouter une fiche produit
-  </a>
-</div>
+  <div class="mb-3 text-end">
+    <a href="{% url 'ajouter_fiche_produit' %}" class="btn btn-success">
+      <i class="bi bi-plus-circle"></i> Ajouter une fiche produit
+    </a>
+  </div>
 
   {% if fiches_produit %}
-    <table class="table table-bordered table-hover">
-      <thead class="thead-light">
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-light">
         <tr>
           <th>Nom</th>
           <th>Numéro FDS</th>
-          <th>Stock</th>
+          <th>Stock actuel</th>
           <th>Date de mise à jour</th>
-          <th>Voir fiche</th>
+          <th class="text-center" style="width: 120px;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -28,25 +29,25 @@
         <tr>
           <td>{{ fiche.nom }}</td>
           <td>{{ fiche.numero_fds }}</td>
-          <td>{{ fiche.stock }}</td>
-          <td>{{ fiche.created_at|date:"d/m/Y" }}</td>
-          <td>
-            <a href="{% url 'fiche_produit' fiche.pk %}">
-            <img src="/media/img/pencil-square.svg" alt="Modifier" width="20" height="20">
+          <td>{{ fiche.stock_actuel }}</td>
+          <td>{{ fiche.updated_at|date:"d/m/Y H:i" }}</td>
+          <td class="text-center">
+            <a href="{% url 'fiche_produit' fiche.pk %}" class="btn btn-sm btn-primary me-1" title="Voir / Modifier">
+              <i class="bi bi-pencil-square"></i>
             </a>
-            </td>
-            <td>
-            <a href="{% url 'supprimer_fiche_produit' fiche.pk %}">
-              <i class="bi bi-trash"></i> 
+            <a href="{% url 'supprimer_fiche_produit' fiche.pk %}" class="btn btn-sm btn-danger" title="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer cette fiche produit ?');">
+              <i class="bi bi-trash"></i>
             </a>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+  </div>
   {% else %}
-    <div class="alert alert-info">Aucune fiche produit enregistrée.</div>
+  <div class="alert alert-info text-center">
+    Aucune fiche produit enregistrée.
+  </div>
   {% endif %}
 </div>
 {% endblock %}
-

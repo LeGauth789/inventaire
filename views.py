@@ -92,7 +92,9 @@ def liste_produits(request):
     })
 
 def fiche_produit(request, pk):
-    produit = get_object_or_404(FicheProduit, pk=pk)
+    produit = get_object_or_404(FicheProduit.objects.prefetch_related(
+        'lots__mouvements__utilisateur'
+    ), pk=pk)
     lots = produit.lots.all()
     return render(request, 'inventaire/fiche_produit.html', {
         'produit': produit,

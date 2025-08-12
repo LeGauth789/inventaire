@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Sum
 
 
 ### 1. Fiche Produit – Définition générique du produit
@@ -13,6 +14,24 @@ class FicheProduit(models.Model):
     fichier_FDS = models.FileField("Fichier FDS (PDF)", upload_to='fichier_FDS/', null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def stock_actuel(self):
+        from django.db.models import Sum, Q
+
+        # Total des entrées (AJOUT)
+
+        entrees = self.lots.aggregate(
+            total=Sum('mouvements__quantite', filter=Q(mouvements__type_mouvement='AJOUT'))
+        )['total'] or 0
+
+        # Total des sorties (RETRAIT)
+        sorties = self.lots.aggregate(
+            total=Sum('mouvements__quantite', filter=Q(mouvements__type_mouvement='RETRAIT'))
+        )['total'] or 0
+
+        return entrees - sorties
+
 
     def __str__(self):
         return f"{self.nom} (FDS: {self.numero_fds})"
@@ -40,8 +59,20 @@ class LotProduit(models.Model):
     def quantite_actuelle(self):
         entrees = self.mouvements.filter(type_mouvement='AJOUT').aggregate(models.Sum('quantite'))['quantite__sum'] or 0
         retraits = self.mouvements.filter(type_mouvement='RETRAIT').aggregate(models.Sum('quantite'))['quantite__sum'] or 0
-        return self.stock_initial + entrees - retraits
+        return entrees - retraits
 
+    # On surcharge le methode save pour creer un mouvement lors de la premiere sauvegarde 
+    def save(self, *args, **kwargs):
+        creating = self.pk is None
+        super().save(*args, **kwargs)
+        if creating:
+            MouvementStock.objects.create(
+                lot=self,
+                type_mouvement='AJOUT',
+                quantite=self.stock_initial,
+                utilisateur=self.utilisateur,
+                commentaire="Stock initial à la création du lot"
+            )
 
 ### 3. Mouvement de Stock – Entrée ou sortie de stock pour un lot
 class MouvementStock(models.Model):
